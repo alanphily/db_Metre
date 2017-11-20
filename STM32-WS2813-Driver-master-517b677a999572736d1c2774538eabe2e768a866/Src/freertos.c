@@ -52,9 +52,9 @@
 #include "cmsis_os.h"
 
 /* USER CODE BEGIN Includes */     
-#include "x_nucleo_iks01a2.h"
-#include "x_nucleo_iks01a2_accelero.h"
 #include "../LIBS/WS2813.h"
+#include "dfsdm.h"
+#include "math.h"
 #include "usart.h"
 
 //#define KARR
@@ -64,9 +64,13 @@
 osThreadId defaultTaskHandle;
 
 /* USER CODE BEGIN Variables */
+#define AudioBUFFERLEN 128
+static  int32_t audioBuffer[AudioBUFFERLEN];
 #define MAX_BUF_SIZE 256
 static char dataOut[MAX_BUF_SIZE];
-static void *LSM6DSL_X_0_handle = NULL;
+TaskHandle_t micTask;
+QueueHandle_t maQueue;
+
 /* USER CODE END Variables */
 
 /* Function prototypes -------------------------------------------------------*/
@@ -75,8 +79,8 @@ void StartDefaultTask(void const * argument);
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
 /* USER CODE BEGIN FunctionPrototypes */
-void vAcquisitionCallback(TimerHandle_t timer);
-
+void VmicTask(void* param);
+void vLedsTimerCallback(TimerHandle_t* timer);
 /* USER CODE END FunctionPrototypes */
 
 /* Hook prototypes */
@@ -85,9 +89,7 @@ void vAcquisitionCallback(TimerHandle_t timer);
 
 void MX_FREERTOS_Init(void) {
   /* USER CODE BEGIN Init */
-	BSP_ACCELERO_Init( LSM6DSL_X_0, &LSM6DSL_X_0_handle );
-	BSP_ACCELERO_Sensor_Enable( LSM6DSL_X_0_handle );
-	ws2813_init_tim(&htim3, TIM_CHANNEL_1, 8);
+  ws2813_init_tim(&htim3, TIM_CHANNEL_1, 8);
   /* USER CODE END Init */
 
   /* USER CODE BEGIN RTOS_MUTEX */
@@ -100,13 +102,7 @@ void MX_FREERTOS_Init(void) {
 
   /* USER CODE BEGIN RTOS_TIMERS */
   /* start timers, add new ones, ... */
-  TimerHandle_t acquisitionTimer = xTimerCreate("Acquisition",
-		  pdMS_TO_TICKS(100),
-		  pdTRUE,
-		  NULL,
-		  vAcquisitionCallback);
 
-  xTimerStart(acquisitionTimer, 10);
   /* USER CODE END RTOS_TIMERS */
 
   /* Create the thread(s) */
@@ -116,10 +112,13 @@ void MX_FREERTOS_Init(void) {
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
+  xTaskCreate(VmicTask,"MickTask",100,NULL,2,&micTask);
+
   /* USER CODE END RTOS_THREADS */
 
   /* USER CODE BEGIN RTOS_QUEUES */
   /* add queues, ... */
+  maQueue = xQueueCreate(10,sizeof(int64_t));
   /* USER CODE END RTOS_QUEUES */
 }
 
@@ -138,81 +137,62 @@ void StartDefaultTask(void const * argument)
 
 /* USER CODE BEGIN Application */
 
-void vAcquisitionCallback(TimerHandle_t timer){
-	uint8_t id;
-	SensorAxes_t acceleration;
-	uint8_t status;
 
+void VmicTask(void* param){
 
-	BSP_ACCELERO_Get_Instance( LSM6DSL_X_0_handle, &id );
+	HAL_DFSDM_FilterRegularStart_DMA(&hdfsdm1_filter0,audioBuffer,AudioBUFFERLEN);
+	while(1){
+		int64_t maxVal;
+		if(xQueueReceiveFromISR(maQueue,&maxVal,pdMS_TO_TICKS(10))==pdTRUE){
 
-	BSP_ACCELERO_IsInitialized( LSM6DSL_X_0_handle, &status );
-
-	if ( status == 1 )
-	{
-		if ( BSP_ACCELERO_Get_Axes( LSM6DSL_X_0_handle, &acceleration ) == COMPONENT_ERROR )
-		{
-			acceleration.AXIS_X = 0;
-			acceleration.AXIS_Y = 0;
-			acceleration.AXIS_Z = 0;
-		}
-
-		WS2813_COLOR color_on={.rgb={.r=0,.g=0,.b=0}};
-
-
-		for(int i=0;i<8;i++){
-			ws2813_update_led(i,color_on);
-		}
-
-
-		if((int)acceleration.AXIS_X<-200){
+			WS2813_COLOR color_on={.rgb={.r=0,.g=0,.b=0}};
 			color_on.rgb.r=63;
-			ws2813_update_led(0, color_on);
-			snprintf( dataOut, MAX_BUF_SIZE,  "\r\n la led 1 s'allume \r\n");
-		}
-		else if((int)acceleration.AXIS_X>=-200 && (int)acceleration.AXIS_X<-100){
-			color_on.rgb.r=63;
-			ws2813_update_led(1, color_on);
-			snprintf( dataOut, MAX_BUF_SIZE,  "\r\n la led 2 s'allume \r\n");
-		}
-		else if((int)acceleration.AXIS_X>=-100 && (int)acceleration.AXIS_X<-50){
-			color_on.rgb.r=63;
-			ws2813_update_led(2, color_on);
-			snprintf( dataOut, MAX_BUF_SIZE,  "\r\n la led 3 s'allume \r\n");
-		}
-		else if((int)acceleration.AXIS_X>=-50 && (int)acceleration.AXIS_X<0){
-			color_on.rgb.g=63;
-			ws2813_update_led(3, color_on);
-			snprintf( dataOut, MAX_BUF_SIZE,  "\r\n la led 4 s'allume \r\n");
-		}
-		else if((int)acceleration.AXIS_X>=0 && (int)acceleration.AXIS_X<50){
-			color_on.rgb.g=63;
-			ws2813_update_led(4, color_on);
-			snprintf( dataOut, MAX_BUF_SIZE,  "\r\n la led 5 s'allume \r\n");
-		}
-		else if((int)acceleration.AXIS_X>=50 && (int)acceleration.AXIS_X<100){
-			color_on.rgb.r=63;
-			ws2813_update_led(5, color_on);
-			snprintf( dataOut, MAX_BUF_SIZE,  "\r\n la led 6 s'allume \r\n");
-		}
-		else if((int)acceleration.AXIS_X>=100 && (int)acceleration.AXIS_X<200){
-			color_on.rgb.r=63;
-			ws2813_update_led(6, color_on);
-			snprintf( dataOut, MAX_BUF_SIZE,  "\r\n la led 7 s'allume \r\n");
-		}
-		else if((int)acceleration.AXIS_X>200){
-			color_on.rgb.r=63;
-			ws2813_update_led(7, color_on);
-			snprintf( dataOut, MAX_BUF_SIZE, "\r\n la led 8 s'allume \r\n");
-		}
+			for(int i=0;i<8;i++){
+				ws2813_update_led(0, color_on);
+			}
 
-		// Transmet la trame aux LEDS
-		HAL_UART_Transmit( &huart2, ( uint8_t * )dataOut, strlen( dataOut ), 5000 );
+			snprintf( dataOut, MAX_BUF_SIZE, "\r\n la valeur max est : %d \r\n",(int)maxVal);
 
-		ws2813_start_transmission_tim();
+				HAL_UART_Transmit(&huart2,(uint8_t*)dataOut,strlen(dataOut),5000);
+
+				if(maxVal < 10000){
+					ws2813_update_led(0, color_on);
+				}else if(maxVal>10000 && maxVal<20000){
+					ws2813_update_led(1, color_on);
+				}else if(maxVal>20000 && maxVal<30000){
+					ws2813_update_led(2, color_on);
+				}else if(maxVal>30000 && maxVal<40000){
+					ws2813_update_led(3, color_on);
+				}else if(maxVal>40000 && maxVal<50000){
+					ws2813_update_led(4, color_on);
+				}else if(maxVal>50000 && maxVal<60000){
+					ws2813_update_led(5, color_on);
+				}else if(maxVal>60000 && maxVal<70000){
+					ws2813_update_led(6, color_on);
+				}else if(maxVal>70000 && maxVal<80000){
+					ws2813_update_led(7, color_on);
+				}
+
+				ws2813_start_transmission_tim();
+		}
+	}
+}
+
+void HAL_DFSDM_FilterRegConvCpltCallback(DFSDM_Filter_HandleTypeDef *hsfsdm_filter){
+
+	uint64_t maxVal=0;
+	int index=0;
+	for(index=0;index<AudioBUFFERLEN;index++){
+		if(maxVal < abs(audioBuffer[index])){
+			maxVal = abs(audioBuffer[index]);
+		}
 	}
 
+	xQueueSendFromISR(maQueue,&maxVal,NULL);
+
 }
+
+
 
 /* USER CODE END Application */
 

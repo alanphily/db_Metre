@@ -35,11 +35,6 @@
 								<option id="gnu.c.compiler.option.debugging.level.2121669022" name="Debug Level" superClass="gnu.c.compiler.option.debugging.level" useByScannerDiscovery="false" value="gnu.c.debugging.level.max" valueType="enumerated" />
 								<option id="gnu.c.compiler.option.include.paths.4116527" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="/media/sf_Code/stm/Projets/IMERIR/Drivers/WS2813/Inc" />
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/Drivers/BSP/Components/Common}&quot;" />
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/Drivers/BSP/Components/lsm303agr}&quot;" />
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/Drivers/BSP/Components/lsm6dsl}&quot;" />
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/Drivers/BSP/STM32L4xx_Nucleo}&quot;" />
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/Drivers/BSP/X_NUCLEO_IKS01A2}&quot;" />
 									<listOptionValue builtIn="false" value="../WS2813/LIBS" />
 									<listOptionValue builtIn="false" value="/media/sf_Code/stm/Projets/IMERIR/Drivers/WS2813/Drivers/STM32L4xx_HAL_Driver/Inc" />
 									<listOptionValue builtIn="false" value="/media/sf_Code/stm/Projets/IMERIR/Drivers/WS2813/Drivers/STM32L4xx_HAL_Driver/Inc/Legacy" />
@@ -59,7 +54,6 @@
 								</option>
 								<option id="gnu.c.compiler.option.preprocessor.def.symbols.1289914649" name="Defined symbols (-D)" superClass="gnu.c.compiler.option.preprocessor.def.symbols" useByScannerDiscovery="false" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="__weak=&quot;__attribute__((weak))&quot;" />
-									<listOptionValue builtIn="false" value="USE_STM32L4XX_NUCLEO" />
 									<listOptionValue builtIn="false" value="__packed=&quot;__attribute__((__packed__))&quot;" />
 									<listOptionValue builtIn="false" value="USE_HAL_DRIVER" />
 									<listOptionValue builtIn="false" value="STM32L476xx" />
@@ -102,7 +96,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="BSP/Components/lsm6ds3|BSP/Components/lsm6ds0|BSP/Components/lps25hb|BSP/Components/lps22hb|BSP/Components/lis3mdl|BSP/X_NUCLEO_IKS01A2/x_nucleo_iks01a2_temperature.c|BSP/X_NUCLEO_IKS01A2/x_nucleo_iks01a2_pressure.c|BSP/X_NUCLEO_IKS01A2/x_nucleo_iks01a2_magneto.c|BSP/X_NUCLEO_IKS01A2/x_nucleo_iks01a2_humidity.c|BSP/X_NUCLEO_IKS01A2/x_nucleo_iks01a2_gyro.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Drivers" />
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Drivers" />
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Inc" />
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="LIBS" />
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Middlewares" />
@@ -188,7 +182,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="BSP/Components/lsm6ds3|BSP/Components/lsm6ds0|BSP/Components/lps25hb|BSP/Components/lps22hb|BSP/Components/lis3mdl|BSP/X_NUCLEO_IKS01A2/x_nucleo_iks01a2_temperature.c|BSP/X_NUCLEO_IKS01A2/x_nucleo_iks01a2_pressure.c|BSP/X_NUCLEO_IKS01A2/x_nucleo_iks01a2_magneto.c|BSP/X_NUCLEO_IKS01A2/x_nucleo_iks01a2_humidity.c|BSP/X_NUCLEO_IKS01A2/x_nucleo_iks01a2_gyro.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Drivers" />
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Drivers" />
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Inc" />
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="LIBS" />
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Middlewares" />

@@ -16,11 +16,6 @@ RM := rm -rf
 -include Middlewares/Third_Party/FreeRTOS/Source/subdir.mk
 -include LIBS/subdir.mk
 -include Drivers/STM32L4xx_HAL_Driver/Src/subdir.mk
--include Drivers/BSP/X_NUCLEO_IKS01A2/subdir.mk
--include Drivers/BSP/STM32L4xx_Nucleo/subdir.mk
--include Drivers/BSP/Components/lsm6dsl/subdir.mk
--include Drivers/BSP/Components/lsm303agr/subdir.mk
--include Drivers/BSP/Components/hts221/subdir.mk
 -include subdir.mk
 -include objects.mk
 

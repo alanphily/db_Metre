@@ -15,11 +15,6 @@ C_DEPS :=
 
 # Every subdirectory with source files must be described here
 SUBDIRS := \
-Drivers/BSP/Components/hts221 \
-Drivers/BSP/Components/lsm303agr \
-Drivers/BSP/Components/lsm6dsl \
-Drivers/BSP/STM32L4xx_Nucleo \
-Drivers/BSP/X_NUCLEO_IKS01A2 \
 Drivers/STM32L4xx_HAL_Driver/Src \
 LIBS \
 Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS \
